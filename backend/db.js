@@ -1,15 +1,38 @@
 const mongoose = require('mongoose');
 const bcrypt = require("bcrypt");
+require('dotenv').config();
 
 mongo_url = process.env.MONGODB_URL;
 
 mongoose.connect(mongo_url);
 
 const userSchema = new mongoose.Schema({
-    username: String,
-    password: String,
-    firstName: String,
-    lastName: String,
+    username: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true,
+        lowercase: true,
+        minLength: 3,
+        maxLength: 30
+    },
+    password: {
+        type: String,
+        required: true,
+        minLength: 6
+    },
+    firstName: {
+        type: String,
+        required: true,
+        trim: true,
+        maxLength: 50
+    },
+    lastName: {
+        type: String,
+        required: true,
+        trim: true,
+        maxLength: 50
+    }
 });
 
 userSchema.methods.createHash = function(password) {
@@ -22,4 +45,21 @@ userSchema.methods.validatePassword = function(password) {
 
 const User = mongoose.model("User", userSchema);
 
-module.exports = User;
+const accountSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "User"
+    },
+    balance: {
+        type: Number,
+        required: true,
+    }
+});
+
+const Account = mongoose.model("Account", accountSchema);
+
+module.exports = {
+    User,
+    Account
+}
