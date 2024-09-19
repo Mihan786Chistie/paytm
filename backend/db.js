@@ -32,16 +32,24 @@ const userSchema = new mongoose.Schema({
         required: true,
         trim: true,
         maxLength: 50
-    }
+    },
+    transactions: [
+        {
+            to: { type: String, required: true },
+            amount: { type: Number, required: true },
+            timestamp: { type: Date, default: Date.now },
+            sign: { type: String, required: true }
+        }
+    ]
 });
 
-userSchema.methods.createHash = function(password) {
+userSchema.methods.createHash = function (password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-}
+};
 
-userSchema.methods.validatePassword = function(password) {
+userSchema.methods.validatePassword = function (password) {
     return bcrypt.compareSync(password, this.password);
-}
+};
 
 const User = mongoose.model("User", userSchema);
 
@@ -59,7 +67,4 @@ const accountSchema = new mongoose.Schema({
 
 const Account = mongoose.model("Account", accountSchema);
 
-module.exports = {
-    User,
-    Account
-}
+module.exports = { User, Account };
